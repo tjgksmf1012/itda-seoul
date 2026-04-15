@@ -3,10 +3,14 @@ import { z } from "zod";
 import { buildRecommendation } from "../lib/recommend.js";
 
 const requestSchema = z.object({
-  persona: z.enum(["elder", "child", "worker"]),
-  intent: z.enum(["outing", "program", "support"]),
-  state: z.enum(["low", "normal", "high"]),
-  walkMinutes: z.number().int().min(0).max(60),
+  district: z.string().trim().min(2).max(20),
+  companionType: z.enum(["solo", "family", "parents", "friends"]),
+  purpose: z.enum(["healing", "culture", "family", "learning"]),
+  placePreference: z.enum(["indoor", "outdoor", "any"]),
+  timeWindow: z.enum(["morning", "afternoon", "evening", "weekend"]),
+  budget: z.enum(["free", "under10000", "any"]),
+  mobilityLevel: z.enum(["easy", "normal", "active"]),
+  maxTravelMinutes: z.number().int().min(5).max(60),
   interestTags: z.array(z.string()).default([])
 });
 
@@ -17,7 +21,7 @@ recommendationsRouter.post("/", (req, res) => {
 
   if (!parsed.success) {
     return res.status(400).json({
-      message: "잘못된 추천 요청입니다.",
+      message: "추천 요청 형식이 올바르지 않습니다.",
       issues: parsed.error.issues
     });
   }

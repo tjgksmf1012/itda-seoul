@@ -3,45 +3,88 @@ export type IntentKey = "outing" | "program" | "support";
 export type StateKey = "low" | "normal" | "high";
 export type CaseStatus = "pending" | "contacted" | "scheduled" | "completed";
 
+export type CompanionType = "solo" | "family" | "parents" | "friends";
+export type PurposeKey = "healing" | "culture" | "family" | "learning";
+export type PlacePreference = "indoor" | "outdoor" | "any";
+export type TimeWindow = "morning" | "afternoon" | "evening" | "weekend";
+export type BudgetKey = "free" | "under10000" | "any";
+export type MobilityLevel = "easy" | "normal" | "active";
+
 export type RecommendationRequest = {
-  persona: PersonaKey;
-  intent: IntentKey;
-  state: StateKey;
-  walkMinutes: number;
+  district: string;
+  companionType: CompanionType;
+  purpose: PurposeKey;
+  placePreference: PlacePreference;
+  timeWindow: TimeWindow;
+  budget: BudgetKey;
+  mobilityLevel: MobilityLevel;
+  maxTravelMinutes: number;
   interestTags: string[];
 };
 
 export type ProgramItem = {
   id: string;
+  portal: "seoul-open-data";
+  datasetName: string;
   title: string;
-  category: "welfare" | "culture" | "reservation" | "support";
+  category: "welfare" | "culture" | "reservation" | "education" | "support";
   district: string;
-  place?: string;
+  place: string;
   startDate?: string;
   endDate?: string;
   availabilityStatus: "always" | "upcoming" | "closing_soon" | "ended";
   walkMinutes: number;
-  free: boolean;
+  indoorType: "indoor" | "outdoor" | "mixed";
+  budgetType: "free" | "paid" | "unknown";
   guardianFriendly: boolean;
-  groupSize: "small" | "medium";
-  timeSlot: "morning" | "afternoon" | "weekend" | "any";
-  tags: string[];
+  familyFriendly: boolean;
+  seniorFriendly: boolean;
+  youthFriendly: boolean;
+  timeSlots: TimeWindow[];
+  companionTypes: CompanionType[];
+  interestTags: string[];
   barrierSupport: string[];
   summary: string;
   actionUrl: string;
+  sourceUrl: string;
+};
+
+export type CitySignal = {
+  district: string;
+  portal: "data-go-kr";
+  datasets: string[];
+  weatherType: "clear" | "cloudy" | "rain" | "heat" | "cold";
+  weatherLabel: string;
+  temperatureC: number;
+  airQuality: "good" | "moderate" | "bad";
+  airQualityLabel: string;
+  outdoorIndex: number;
+  walkComfort: "low" | "medium" | "high";
+  advice: string;
+  updatedAt: string;
+};
+
+export type DataSourceNote = {
+  portal: "seoul-open-data" | "data-go-kr";
+  datasetName: string;
+  role: string;
 };
 
 export type RecommendationResult = {
-  recommendationType: "outing" | "program" | "support";
+  headline: string;
   primaryAction: string;
   summary: string;
-  shareMessage: string;
+  todayBrief: string;
   reasons: string[];
   actionPlan: string[];
-  checkInMessage: string;
-  supportLevel: "light" | "guided" | "urgent";
+  shareMessage: string;
   matchScore: number;
+  recommendationTone: string;
+  citySignal: CitySignal;
   suggestedPrograms: ProgramItem[];
+  sourceNotes: DataSourceNote[];
+  publicValue: string;
+  serviceWhy: string;
 };
 
 export type AdminCase = {

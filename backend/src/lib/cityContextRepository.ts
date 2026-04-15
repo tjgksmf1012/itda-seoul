@@ -5,20 +5,29 @@ import { mockCitySignals } from "../data/mockCitySignals.js";
 import { CitySignal } from "../types.js";
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
+const liveSignalsPath = path.resolve(currentDir, "../../../data/processed/city-signals.live.json");
 const citySignalsPath = path.resolve(currentDir, "../../../data/processed/city-signals.sample.json");
 
 function loadSignals(): CitySignal[] {
-  if (!fs.existsSync(citySignalsPath)) {
-    return mockCitySignals;
+  const candidates = [liveSignalsPath, citySignalsPath];
+
+  for (const candidatePath of candidates) {
+    if (!fs.existsSync(candidatePath)) {
+      continue;
+    }
+
+    try {
+      const raw = fs.readFileSync(candidatePath, "utf-8");
+      const parsed = JSON.parse(raw) as CitySignal[];
+      if (parsed.length) {
+        return parsed;
+      }
+    } catch (_error) {
+      continue;
+    }
   }
 
-  try {
-    const raw = fs.readFileSync(citySignalsPath, "utf-8");
-    const parsed = JSON.parse(raw) as CitySignal[];
-    return parsed.length ? parsed : mockCitySignals;
-  } catch (_error) {
-    return mockCitySignals;
-  }
+  return mockCitySignals;
 }
 
 export function getCitySignal(district: string): CitySignal {

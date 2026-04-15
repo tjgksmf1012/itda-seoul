@@ -52,6 +52,20 @@ npm run build --workspace backend
 npm run build --workspace frontend
 ```
 
+## 공공데이터포털 시그널 갱신
+
+공공데이터포털 키가 있으면 날씨·대기질 기반 도시 시그널을 실제로 생성할 수 있습니다.
+
+1. `data/config/city_signal_zones.example.json`을 복사해 `data/config/city_signal_zones.json`으로 만듭니다.
+2. `DATA_GO_KR_SERVICE_KEY`를 환경 변수로 설정합니다.
+3. 아래 스크립트를 실행합니다.
+
+```bash
+python data/scripts/fetch_city_signals.py
+```
+
+생성 결과는 `data/processed/city-signals.live.json`에 저장되고, 백엔드는 이 파일이 있으면 샘플보다 우선해서 읽습니다.
+
 ## 데이터 사용 포인트
 
 ### 서울 열린데이터광장

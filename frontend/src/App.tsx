@@ -154,6 +154,15 @@ const personaLabels = {
 } as const;
 
 type CaseFilterKey = "all" | "urgent" | "overdue" | "today" | "unplanned";
+type AppTabKey = "home" | "planner" | "ops" | "proof";
+
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{
+    outcome: "accepted" | "dismissed";
+    platform: string;
+  }>;
+};
 
 function getHistoryTypeLabel(type: AdminHistoryItem["type"]) {
   switch (type) {
@@ -371,6 +380,7 @@ function App() {
   const [dashboard, setDashboard] = useState<AdminDashboard | null>(null);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [caseFilter, setCaseFilter] = useState<CaseFilterKey>("all");
+  const [activeTab, setActiveTab] = useState<AppTabKey>("home");
   const [history, setHistory] = useState<AdminHistoryItem[]>([]);
   const [loadingDashboard, setLoadingDashboard] = useState(true);
   const [loadingHistory, setLoadingHistory] = useState(false);
@@ -390,6 +400,8 @@ function App() {
   const [outcomeNote, setOutcomeNote] = useState("");
   const [outcomeReason, setOutcomeReason] = useState<ParticipationReasonCode>("mobility");
   const [adminMessage, setAdminMessage] = useState<string | null>(null);
+  const [installPromptEvent, setInstallPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
+  const [installFeedback, setInstallFeedback] = useState<string | null>(null);
   const [activePlaybookReason, setActivePlaybookReason] = useState<ParticipationReasonCode | null>(null);
   const [pendingPlaybookLog, setPendingPlaybookLog] = useState<{
     caseId: string;
@@ -550,6 +562,60 @@ function App() {
   }, [selectedCase]);
 
   useEffect(() => {
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPromptEvent(event as BeforeInstallPromptEvent);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  useEffect(() => {
+    const sections = [
+      { id: "home", tab: "home" as const },
+      { id: "planner", tab: "planner" as const },
+      { id: "ops", tab: "ops" as const },
+      { id: "proof", tab: "proof" as const }
+    ];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((left, right) => right.intersectionRatio - left.intersectionRatio)[0];
+
+        if (!visibleEntry) {
+          return;
+        }
+
+        const matchedSection = sections.find((section) => section.id === visibleEntry.target.id);
+
+        if (matchedSection) {
+          setActiveTab(matchedSection.tab);
+        }
+      },
+      {
+        rootMargin: "-20% 0px -40% 0px",
+        threshold: [0.2, 0.45, 0.7]
+      }
+    );
+
+    sections.forEach((section) => {
+      const element = document.getElementById(section.id);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
     if (!pendingPlaybookLog || !selectedCase || !recommendation || loadingRecommendation) {
       return;
     }
@@ -690,6 +756,30 @@ function App() {
   const refreshCaseHistory = async (caseId: string) => {
     const nextHistory = await requestAdminHistory(caseId);
     setHistory(nextHistory);
+  };
+
+  const scrollToTabSection = (tab: AppTabKey) => {
+    setActiveTab(tab);
+    document.getElementById(tab)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  };
+
+  const handleInstallClick = async () => {
+    if (!installPromptEvent) {
+      setInstallFeedback("브라우저 설치 버튼이 아직 준비되지 않았습니다. 모바일 브라우저 메뉴에서 홈 화면에 추가해 주세요.");
+      return;
+    }
+
+    await installPromptEvent.prompt();
+    const choice = await installPromptEvent.userChoice;
+    setInstallFeedback(
+      choice.outcome === "accepted"
+        ? "잇다서울 설치 요청을 보냈습니다. 홈 화면이나 앱 목록에서 확인해 주세요."
+        : "설치 요청을 닫았습니다. 나중에 다시 설치할 수 있습니다."
+    );
+    setInstallPromptEvent(null);
   };
 
   const handleStatusUpdate = async (status: CaseStatus) => {
@@ -878,17 +968,34 @@ function App() {
   };
 
   return (
-    <div className="page-shell">
-      <header className="hero">
+    <div className="page-shell app-shell">
+      <div className="mobile-appbar">
+        <div className="mobile-appbar-copy">
+          <span className="mini-label">Itda Seoul App Shell</span>
+          <strong>잇다서울</strong>
+        </div>
+        <div className="mobile-appbar-actions">
+          <button className="secondary-link button-inline appbar-button" onClick={() => scrollToTabSection("planner")} type="button">
+            처방 시작
+          </button>
+          <button className="primary-link button-inline appbar-button" onClick={handleInstallClick} type="button">
+            앱처럼 설치
+          </button>
+        </div>
+      </div>
+
+      {installFeedback ? <p className="install-feedback">{installFeedback}</p> : null}
+
+      <header className="hero" id="home">
         <div className="hero-nav">
           <div className="brand-block">
             <span className="brand-eyebrow">2026 서울시 빅데이터 활용 경진대회 창업 부문</span>
             <strong>잇다서울</strong>
           </div>
           <div className="hero-nav-links">
-            <a href="#planner">처방 설계</a>
-            <a href="#ops">기관 운영</a>
-            <a href="#proof">데이터 근거</a>
+            <a href="#planner" onClick={() => setActiveTab("planner")}>처방 설계</a>
+            <a href="#ops" onClick={() => setActiveTab("ops")}>기관 운영</a>
+            <a href="#proof" onClick={() => setActiveTab("proof")}>데이터 근거</a>
             <a href="#finals">본선 설득</a>
           </div>
         </div>
@@ -1947,6 +2054,33 @@ function App() {
           </div>
         </section>
       </main>
+
+      <nav aria-label="모바일 앱 탭" className="mobile-tabbar">
+        <button className={activeTab === "home" ? "active" : ""} onClick={() => scrollToTabSection("home")} type="button">
+          <span>홈</span>
+          <strong>요약</strong>
+        </button>
+        <button
+          className={activeTab === "planner" ? "active" : ""}
+          onClick={() => scrollToTabSection("planner")}
+          type="button"
+        >
+          <span>처방</span>
+          <strong>추천</strong>
+        </button>
+        <button className={activeTab === "ops" ? "active" : ""} onClick={() => scrollToTabSection("ops")} type="button">
+          <span>기관</span>
+          <strong>운영</strong>
+        </button>
+        <button
+          className={activeTab === "proof" ? "active" : ""}
+          onClick={() => scrollToTabSection("proof")}
+          type="button"
+        >
+          <span>증빙</span>
+          <strong>데이터</strong>
+        </button>
+      </nav>
     </div>
   );
 }

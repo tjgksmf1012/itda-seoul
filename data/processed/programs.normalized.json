@@ -1,0 +1,38 @@
+[
+  {
+    "source": "elderly_welfare_facilities",
+    "title": "종로노인복지관 소규모 건강체조",
+    "district": "종로구",
+    "place": "종로노인복지관",
+    "startDate": "2026-04-15",
+    "endDate": "2026-04-15",
+    "actionUrl": "https://yeyak.seoul.go.kr",
+    "summary": "첫 외출 부담이 낮은 오전 건강 프로그램",
+    "isFree": true,
+    "tags": ["건강", "소규모", "가벼운 활동"]
+  },
+  {
+    "source": "cultural_events",
+    "title": "성동 문화센터 무료 영화 해설 모임",
+    "district": "성동구",
+    "place": "성동문화센터",
+    "startDate": "2026-04-19",
+    "endDate": "2026-04-19",
+    "actionUrl": "https://culture.seoul.go.kr",
+    "summary": "보호자 동행이 쉬운 주말 문화형 외출 후보",
+    "isFree": true,
+    "tags": ["문화", "영화", "대화"]
+  },
+  {
+    "source": "public_service_reservations",
+    "title": "마포 공공서비스예약 치매예방 미술 프로그램",
+    "district": "마포구",
+    "place": "마포 평생학습관",
+    "startDate": "2026-04-17",
+    "endDate": "2026-04-24",
+    "actionUrl": "https://yeyak.seoul.go.kr",
+    "summary": "예약 후 바로 참여 전환이 가능한 공공 프로그램",
+    "isFree": true,
+    "tags": ["예술", "손작업", "집중 활동"]
+  }
+]

@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: itda-seoul-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: STORAGE_MODE
+        value: memory
+
+  - type: web
+    name: itda-seoul-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://itda-seoul-api.onrender.com

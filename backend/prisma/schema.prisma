@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AdminCase {
+  id                    String         @id
+  name                  String
+  ageLabel              String
+  district              String
+  participantPhone      String         @default("")
+  guardianName          String?
+  guardianPhone         String?
+  assignee              String         @default("")
+  nextContactAt         DateTime?
+  riskLevel             String
+  workflowStatus        String         @default("pending")
+  lastParticipationDays Int
+  preferredTime         String
+  mobilitySummary       String
+  nextRecommendation    String
+  statusTagsJson        String
+  profilePersona        String
+  profileIntent         String
+  profileState          String
+  profileWalkMinutes    Int
+  histories             AdminHistory[]
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+}
+
+model AdminHistory {
+  id           String    @id
+  caseId       String
+  adminCase    AdminCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  type         String
+  summary      String
+  metadataJson String?
+  createdAt    DateTime  @default(now())
+
+  @@index([caseId, createdAt])
+}

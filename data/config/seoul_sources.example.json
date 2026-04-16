@@ -1,0 +1,39 @@
+[
+  {
+    "slug": "elderly_welfare_facilities",
+    "datasetName": "노인여가복지시설",
+    "datasetUrl": "https://data.seoul.go.kr/dataList/OA-20412/A/1/datasetView.do",
+    "serviceName": "fcltOpenInfo_OWI",
+    "apiKeyEnv": "SEOUL_API_KEY_ELDERLY_WELFARE_FACILITIES",
+    "responseType": "json",
+    "startIndex": 1,
+    "endIndex": 1000,
+    "extraPath": [],
+    "enabled": true
+  },
+  {
+    "slug": "public_service_reservations",
+    "datasetName": "공공서비스예약 정보",
+    "datasetUrl": "https://data.seoul.go.kr/dataList/OA-2271/A/1/datasetView.do",
+    "serviceName": "ListPublicReservationDetail",
+    "apiKeyEnv": "SEOUL_API_KEY_PUBLIC_SERVICE_RESERVATIONS",
+    "responseType": "json",
+    "startIndex": 1,
+    "endIndex": 5,
+    "extraPath": ["REPLACE_WITH_SVCID"],
+    "enabled": false,
+    "note": "공공서비스예약 데이터셋은 현재 SVCID가 필요한 상세 조회형 Open API 명세가 확인됨"
+  },
+  {
+    "slug": "cultural_events",
+    "datasetName": "서울시 문화행사 정보",
+    "datasetUrl": "https://data.seoul.go.kr/dataList/OA-15486/S/1/datasetView.do",
+    "serviceName": "culturalEventInfo",
+    "apiKeyEnv": "SEOUL_API_KEY_CULTURAL_EVENTS",
+    "responseType": "json",
+    "startIndex": 1,
+    "endIndex": 1000,
+    "extraPath": [],
+    "enabled": true
+  }
+]

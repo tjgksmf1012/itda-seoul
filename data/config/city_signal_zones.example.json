@@ -1,0 +1,42 @@
+[
+  {
+    "district": "종로구",
+    "weatherGrid": { "nx": 60, "ny": 127 },
+    "airStationName": "종로구"
+  },
+  {
+    "district": "성동구",
+    "weatherGrid": { "nx": 61, "ny": 127 },
+    "airStationName": "성동구"
+  },
+  {
+    "district": "강서구",
+    "weatherGrid": { "nx": 57, "ny": 126 },
+    "airStationName": "강서구"
+  },
+  {
+    "district": "마포구",
+    "weatherGrid": { "nx": 59, "ny": 127 },
+    "airStationName": "마포구"
+  },
+  {
+    "district": "강남구",
+    "weatherGrid": { "nx": 61, "ny": 126 },
+    "airStationName": "강남구"
+  },
+  {
+    "district": "서초구",
+    "weatherGrid": { "nx": 61, "ny": 125 },
+    "airStationName": "서초구"
+  },
+  {
+    "district": "영등포구",
+    "weatherGrid": { "nx": 58, "ny": 126 },
+    "airStationName": "영등포구"
+  },
+  {
+    "district": "동대문구",
+    "weatherGrid": { "nx": 61, "ny": 127 },
+    "airStationName": "동대문구"
+  }
+]
